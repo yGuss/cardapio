@@ -8,6 +8,8 @@ const closeModalBtn = document.getElementById('close-modal-btn')
 const cartCounter = document.getElementById('cart-count')
 const addressInput = document.getElementById('address')
 const addressWarn = document.getElementById('address-warn')
+const paymentPix = document.getElementById('payment-warn')
+const radioInput = document.querySelectorAll('radio');
 
 
 let cart = []
@@ -94,15 +96,15 @@ function updateCartModal() {
                 <p class='font-medium '>R$ ${item.price.toFixed(2)}</p>
             </div>
 
-            <button class='remove-cart-btn bg-red-500 text-white rounded px-3 py-1' data-name='${item.name}'>
-                 Remover
+            <button class='remove-cart-btn bg-red-500 text-white rounded px-3 py-2 mx-2 fa-solid fa-trash hover:scale-110 duration-200' data-name='${item.name}'>
             </button>
-
+            
         </div>`
 
         total += item.price * item.quantity
 
         cartItemsContainer.appendChild(cartItemElement)
+
     })
 
     cartTotal.textContent = total.toLocaleString('pt-BR', {
@@ -119,7 +121,9 @@ cartItemsContainer.addEventListener('click', function (event) {
         const name = event.target.getAttribute('data-name')
         removeItemCart(name);
     }
+
 })
+
 
 function removeItemCart(name) {
     const index = cart.findIndex(item => item.name === name)
@@ -212,6 +216,9 @@ checkoutBtn.addEventListener('click', function () {
         addressInput.classList.add("border-red-500")
         return;
     }
+
+
+
     const cartItems = cart.map((item) => {
 
         return (
@@ -219,15 +226,30 @@ checkoutBtn.addEventListener('click', function () {
         )
     }).join("")
 
-    const message = encodeURIComponent(cartItems)
-
     const phone = '32998298960'
+    const message = encodeURIComponent(`${cartItems}\n*Endereço de entrega:* ${addressInput.value}\n*Forma de pagamento:* ${paymentMethod}\n*Total:* ${cartTotal.innerText}`);
 
-    window.open(`https://wa.me/${phone}?text=*Pedido*%0a${message}*Endereço de entrega:* ${addressInput.value}%0a*Total: ${(cartTotal.innerText)}* `)
+    window.open(`https://wa.me/${phone}?text=*Pedido*%0a${message}`)
     cart = [];
     updateCartModal();
 
 })
+
+let paymentMethod;
+document.querySelectorAll('input[name="pagamento"]').forEach((radio) => {
+    radio.addEventListener('click', function () {
+        if (radio.checked) {
+            paymentMethod = radio.value;
+        }
+        if (paymentMethod === 'Pix') {
+            paymentPix.classList.remove('hidden')
+        } else {
+            paymentPix.classList.add('hidden')
+        }
+    })
+});
+
+
 
 function checkRestaurantOpen() {
     const data = new Date();
@@ -238,6 +260,8 @@ function checkRestaurantOpen() {
 
     return hora >= 19 && hora < 23 && ((dia === 5 || dia === 6 || dia === 0));
 }
+
+
 
 const spanItem = document.getElementById('date-span')
 const spanOpenClose = document.getElementById('restaurant-open-close')
@@ -258,5 +282,4 @@ if (isOpen) {
     spanOpenClose.classList.remove('hidden')
     spanOpenClose.classList.add('bg-red-500')
     spanOpenClose.innerText = 'Fechado'
-
 }

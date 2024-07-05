@@ -55,13 +55,13 @@
                 <span
                     class="quantity-badge bg-red-500 rounded-full w-7 h-7 text-white items-center justify-center absolute flex text-center hidden">0</span>
                 <div>
-                    <p class="font-bold">Hamburguer Triplo</p>
+                    <p class="font-bold">Hamburguer Duplo</p>
                     <p class="text-sm">Pão brioche, triplo burguer artesanal 160g, cebola crispy, cheddar, alface,
                         tomate</p>
                     <div class="flex items-center justify-between gap-2 mt-3">
-                        <p class="font-bold text-lg">R$ 32,90</p>
+                        <p class="font-bold text-lg">R$ 35,90</p>
                         <button class="bg-gray-900 rounded px-5 add-to-cart-btn hover:scale-110 duration-200"
-                            data-name="Hamburguer Triplo" data-price="32.90"><i
+                            data-name="Hamburguer Triplo" data-price="35.90"><i
                                 class="fa fa-cart-plus text-lg text-white"></i></button>
                     </div>
                 </div>
@@ -173,6 +173,47 @@
             </div>
             <!--Fim Item Produto-->
 
+            <!--Inicio Item Produto-->
+            <div class="flex gap-2 item" data-name="Hamburguer Auto">
+                <img src="./assets/hamb-7.png" alt="Hamburguer Auto"
+                    class="w-28 h-28 rounded-md hover:scale-110 hover:-rotate-2 duration-300">
+                <span
+                    class="quantity-badge bg-red-500 rounded-full w-7 h-7 text-white items-center justify-center absolute flex text-center hidden">0</span>
+                <div>
+                    <p class="font-bold">Hamburguer Auto</p>
+                    <p class="text-sm">Pão brioche, duplo burguer artesanal 160g, ovo, cebola crispy, cheddar, alface,
+                        tomate, molho da casa
+                    </p>
+                    <div class="flex items-center justify-between gap-2 mt-3">
+                        <p class="font-bold text-lg">R$ 27,90</p>
+                        <button class="bg-gray-900 rounded px-5 add-to-cart-btn hover:scale-110 duration-200"
+                            data-name="Hamburguer Auto" data-price="27.90"><i
+                                class="fa fa-cart-plus text-lg text-white"></i></button>
+                    </div>
+                </div>
+            </div>
+            <!--Fim Item Produto-->
+
+            <!--Inicio Item Produto-->
+            <div class="flex gap-2 item" data-name="Hamburguer Vegano">
+                <img src="./assets/hamb-8.png" alt="Hamburguer Vegano"
+                    class="w-28 h-28 rounded-md hover:scale-110 hover:-rotate-2 duration-300">
+                <span
+                    class="quantity-badge bg-red-500 rounded-full w-7 h-7 text-white items-center justify-center absolute flex text-center hidden">0</span>
+                <div>
+                    <p class="font-bold">Hamburguer Vegano</p>
+                    <p class="text-sm">Pão brioche, ovo, cebola crispy, alface, cenoura,
+                        tomate, molho da casa
+                    </p>
+                    <div class="flex items-center justify-between gap-2 mt-3">
+                        <p class="font-bold text-lg">R$ 10,90</p>
+                        <button class="bg-gray-900 rounded px-5 add-to-cart-btn hover:scale-110 duration-200"
+                            data-name="Hamburguer Vegano" data-price="10.90"><i
+                                class="fa fa-cart-plus text-lg text-white"></i></button>
+                    </div>
+                </div>
+            </div>
+            <!--Fim Item Produto-->
         </main>
 
 
@@ -220,6 +261,7 @@
                 </div>
                 <!--Fim Item Produto-->
 
+
             </div>
         </div>
 
@@ -240,7 +282,21 @@
             <input type="text" placeholder="Digite seu endereço completo..." id="address"
                 class="w-full border-2 rounded p-1 my-1">
             <p class="text-red-500 hidden" id="address-warn">Digite seu endereço completo!</p>
-            <div class="flex items-center justify-between mt-5 w-full">
+
+            <p class="font-bold mt-1">Forma de pagamento:</p>
+            <div class="flex items-center gap-2 ">
+
+                <input type="radio" name="pagamento" value="Dinheiro" id="dinheiro" class="mt-2 size-5">
+                <label for="dinheiro" class="mt-2">Dinheiro</label>
+
+                <input type="radio" name="pagamento" value="Cartão" id="cartao" class="mt-2 size-5">
+                <label for="cartao" class="mt-2">Cartão</label>
+
+                <input type="radio" name="pagamento" value="Pix" id="pix" class="mt-2 size-5 bg-red-500">
+                <label for="pix" class="mt-2">Pix</label>
+            </div>
+            <p class="text-red-500 hidden mt-2" id="payment-warn">Chave pix: (insira a chave pix)</p>
+            <div class="flex items-center justify-between mt-4 w-full">
                 <button id="close-modal-btn">Fechar</button>
                 <button id="checkout-btn" class="bg-green-500 text-white px-4 py-1 rounded">Finalizar pedido</button>
             </div>
