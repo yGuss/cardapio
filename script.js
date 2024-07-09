@@ -1,16 +1,14 @@
-const menu = document.getElementById('menu')
-const cartBtn = document.getElementById('cart-btn')
-const cartModal = document.getElementById('cart-modal')
-const cartItemsContainer = document.getElementById('cart-items')
-const cartTotal = document.getElementById('cart-total')
-const checkoutBtn = document.getElementById('checkout-btn')
-const closeModalBtn = document.getElementById('close-modal-btn')
-const cartCounter = document.getElementById('cart-count')
-const addressInput = document.getElementById('address')
-const addressWarn = document.getElementById('address-warn')
-const paymentPix = document.getElementById('payment-warn')
-const radioInput = document.querySelectorAll('radio');
-
+const menu = document.getElementById('menu');
+const cartBtn = document.getElementById('cart-btn');
+const cartModal = document.getElementById('cart-modal');
+const cartItemsContainer = document.getElementById('cart-items');
+const cartTotal = document.getElementById('cart-total');
+const checkoutBtn = document.getElementById('checkout-btn');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const cartCounter = document.getElementById('cart-count');
+const addressInput = document.getElementById('address');
+const addressWarn = document.getElementById('address-warn');
+const paymentPix = document.getElementById('payment-warn');
 
 let cart = []
 
@@ -31,24 +29,32 @@ cartModal.addEventListener('click', function (event) {
 
 
 menu.addEventListener('click', function (event) {
-    let parentButton = event.target.closest('.add-to-cart-btn');
-    if (parentButton) {
-        const name = parentButton.getAttribute('data-name');
-        const price = parseFloat(parentButton.getAttribute('data-price'));
-        addToCart(name, price);
+    let addItemButton = event.target.closest('.add-to-cart-btn');
+    let removeItemButton = event.target.closest('.remove-cart-btn');
+    if (addItemButton) {
+        const name = addItemButton.getAttribute('data-name');
+        const price = parseFloat(addItemButton.getAttribute('data-price'));
+
+        addToCart(name, price, 1);
     }
+    if (removeItemButton) {
+        const name = removeItemButton.getAttribute('data-name');
+        removeItemCart(name, 1)
+    }
+
 });
 
-function addToCart(name, price) {
+function addToCart(name, price, quantity) {
     const existingItem = cart.find(item => item.name === name);
 
     if (existingItem) {
         existingItem.quantity += 1;
+
     } else {
         cart.push({
             name,
             price,
-            quantity: 1,
+            quantity: quantity,
         });
     }
     updateQuantityBadge(name);
@@ -64,6 +70,7 @@ function addToCart(name, price) {
         },
     }).showToast();
 
+
     updateCartModal();
 }
 
@@ -71,10 +78,33 @@ function updateQuantityBadge(name) {
     const items = document.querySelectorAll('.item');
     items.forEach(item => {
         if (item.getAttribute('data-name') === name) {
+            //Toggle da bagde de quantidade de itens
             const quantityBadge = item.querySelector('.quantity-badge');
+            const quantitySpan = item.querySelector('.item-quantity');
             const itemInCart = cart.find(item => item.name === name);
+            //Toggle dos botões -/+ dependendo da quantidade
+            const addItemButton = item.querySelector('.add-to-cart-btn');
+            const removeItemButton = item.querySelector('.remove-cart-btn');
+            const spanItem = item.querySelector('.item-quantity');
+
+
+            quantitySpan.textContent = itemInCart ? itemInCart.quantity : 0;
             quantityBadge.textContent = itemInCart ? itemInCart.quantity : 0;
-            if (quantityBadge.textContent > 0 ? quantityBadge.classList.remove('hidden') : quantityBadge.classList.add('hidden'));
+
+            if (quantityBadge.textContent > 0) {
+                quantityBadge.classList.remove('hidden')
+                addItemButton.classList.remove('fa-cart-plus')
+                addItemButton.classList.add('fa-plus')
+                removeItemButton.classList.remove('hidden')
+                spanItem.classList.remove('hidden')
+            }
+            else {
+                quantityBadge.classList.add('hidden');
+                addItemButton.classList.add('fa-cart-plus')
+                addItemButton.classList.remove('fa-plus')
+                removeItemButton.classList.add('hidden')
+                spanItem.classList.add('hidden')
+            }
         }
     });
 }
@@ -96,10 +126,19 @@ function updateCartModal() {
                 <p class='font-medium '>R$ ${item.price.toFixed(2)}</p>
             </div>
 
-            <button class='remove-cart-btn bg-red-500 text-white rounded px-3 py-2 mx-2 fa-solid fa-trash hover:scale-110 duration-200' data-name='${item.name}'>
+            <div class="flex gap-2 items-center">
+                <button class='remove-cart-btn px-3 cursor-pointer fa fa-minus text-lg text-gray-900' data-name='${item.name}'>
+                </button>
+                    <span class='item-quantity'>${item.quantity}</span>
+
+               <button class='add-to-cart-btn px-3 cursor-pointer fa fa-plus text-lg text-gray-900' data-name='${item.name}'>
+                </button>
+        
+            <button class='remove-item-cart-btn bg-red-500 text-white rounded px-3 py-2 mx-2 fa-solid fa-trash hover:scale-110 duration-200' data-name='${item.name}'>
             </button>
             
         </div>`
+
 
         total += item.price * item.quantity
 
@@ -117,22 +156,46 @@ function updateCartModal() {
 }
 
 cartItemsContainer.addEventListener('click', function (event) {
-    if (event.target.classList.contais = ('remove-cart-btn')) {
-        const name = event.target.getAttribute('data-name')
-        removeItemCart(name);
-    }
+    let addQuantityButton = event.target.closest('.add-to-cart-btn');
+    let removeQuantityButton = event.target.closest('.remove-cart-btn');
+    let removeItemButton = event.target.closest('.remove-item-cart-btn')
 
+    if (removeQuantityButton) {
+        const name = event.target.getAttribute('data-name')
+        removeItemCart(name, 1);
+    }
+    if (addQuantityButton) {
+        const name = addQuantityButton.getAttribute('data-name');
+        const price = parseFloat(addQuantityButton.getAttribute('data-price'));
+        addToCart(name, price);
+
+    }
+    if (removeItemButton) {
+        const items = document.querySelectorAll('.item');
+        items.forEach(item => {
+            if (item.getAttribute('data-name')) {
+                const name = event.target.getAttribute('data-name')
+                const quantity = item.querySelector('.item-quantity');
+                removeItemCart(name, quantity);
+            }
+
+        })
+
+    }
+    updateCartModal()
 })
 
 
-function removeItemCart(name) {
+
+function removeItemCart(name, quantity) {
     const index = cart.findIndex(item => item.name === name)
 
     if (index !== -1) {
         const item = cart[index];
         if (item.quantity > 1) {
-            item.quantity -= 1;
+            item.quantity -= quantity;
             updateCartModal();
+            updateQuantityBadge(name);
             Toastify({
                 text: 'Item removido',
                 duration: 2000,
@@ -145,25 +208,13 @@ function removeItemCart(name) {
                     borderRadius: '4px'
                 },
             }).showToast();
-            updateQuantityBadge(name);
             return;
         }
-        Toastify({
-            text: 'Item removido',
-            duration: 2000,
-            close: true,
-            gravity: 'top',
-            position: 'right',
-            stopOnFocus: true,
-            style: {
-                background: '#ef4444',
-                borderRadius: '4px'
-            },
-        }).showToast();
+
         cart.splice(index, 1)
-        updateCartModal();
-        updateQuantityBadge(name);
+
     }
+    updateCartModal()
     updateQuantityBadge(name);
 }
 
@@ -217,8 +268,6 @@ checkoutBtn.addEventListener('click', function () {
         return;
     }
 
-
-
     const cartItems = cart.map((item) => {
 
         return (
@@ -233,10 +282,11 @@ checkoutBtn.addEventListener('click', function () {
     cart = [];
     updateCartModal();
 
+
 })
 
 let paymentMethod;
-document.querySelectorAll('input[name="pagamento"]').forEach((radio) => {
+document.querySelectorAll('input[type="radio"]').forEach((radio) => {
     radio.addEventListener('click', function () {
         if (radio.checked) {
             paymentMethod = radio.value;
@@ -283,3 +333,4 @@ if (isOpen) {
     spanOpenClose.classList.add('bg-red-500')
     spanOpenClose.innerText = 'Fechado'
 }
+
