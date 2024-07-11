@@ -8,7 +8,8 @@ const closeModalBtn = document.getElementById('close-modal-btn');
 const cartCounter = document.getElementById('cart-count');
 const addressInput = document.getElementById('address');
 const addressWarn = document.getElementById('address-warn');
-const paymentPix = document.getElementById('payment-warn');
+const paymentWarn = document.getElementById('payment-warn');
+const paymentPix = document.getElementById('pix-key');
 
 let cart = []
 
@@ -26,7 +27,6 @@ cartModal.addEventListener('click', function (event) {
         cartModal.style.display = 'none'
     }
 })
-
 
 menu.addEventListener('click', function (event) {
     let addItemButton = event.target.closest('.add-to-cart-btn');
@@ -70,7 +70,6 @@ function addToCart(name, price, quantity) {
         },
     }).showToast();
 
-
     updateCartModal();
 }
 
@@ -108,7 +107,6 @@ function updateQuantityBadge(name) {
         }
     });
 }
-
 
 function updateCartModal() {
 
@@ -150,7 +148,6 @@ function updateCartModal() {
         style: 'currency',
         currency: 'BRL'
     });
-
     cartCounter.innerText = cart.length;
 
 }
@@ -184,8 +181,6 @@ cartItemsContainer.addEventListener('click', function (event) {
     }
     updateCartModal()
 })
-
-
 
 function removeItemCart(name, quantity) {
     const index = cart.findIndex(item => item.name === name)
@@ -227,9 +222,7 @@ addressInput.addEventListener('input', function (event) {
     }
 })
 
-
 checkoutBtn.addEventListener('click', function () {
-
     const isOpen = checkRestaurantOpen()
     if (!isOpen) {
         Toastify({
@@ -267,39 +260,45 @@ checkoutBtn.addEventListener('click', function () {
         addressInput.classList.add("border-red-500")
         return;
     }
+    if (!paymentMethod) {
+        paymentWarn.classList.remove('hidden')
+        return;
+    }
+    if (paymentMethod) {
+        paymentWarn.classList.add('hidden')
+    }
 
     const cartItems = cart.map((item) => {
-
         return (
             `* ${item.name} - Quantidade: (${item.quantity}) R$${item.price.toFixed(2)}\n`
         )
     }).join("")
 
     const phone = '32998298960'
-    const message = encodeURIComponent(`*Pedido*\n${cartItems}*Endereço de entrega:* ${addressInput.value}\n*Forma de pagamento:* ${paymentMethod}\n*Total:* ${cartTotal.innerText}`);
+    const message = encodeURIComponent(`*Pedido*\n${cartItems}*Endereço de entrega:* ${addressInput.value}\n*Forma de pagamento:*${paymentMethod} \n*Total:* ${cartTotal.innerText}`);
 
     window.open(`https://wa.me/${phone}?text=${message}`)
     cart = [];
+    updateQuantityBadge();
     updateCartModal();
 
-
-})
+});
 
 let paymentMethod;
-document.querySelectorAll('input[type="radio"]').forEach((radio) => {
+let options = document.querySelectorAll('input[name="pagamento"]')
+options.forEach((radio) => {
     radio.addEventListener('click', function () {
         if (radio.checked) {
             paymentMethod = radio.value;
-        }
-        if (paymentMethod === 'Pix') {
+            selected = true;
+        } if (paymentMethod === 'Pix') {
             paymentPix.classList.remove('hidden')
         } else {
             paymentPix.classList.add('hidden')
+            paymentWarn.classList.add('hidden')
         }
     })
-});
-
-
+})
 
 function checkRestaurantOpen() {
     const data = new Date();
@@ -310,8 +309,6 @@ function checkRestaurantOpen() {
 
     return hora >= 19 && hora < 23 && ((dia === 5 || dia === 6 || dia === 0));
 }
-
-
 
 const spanItem = document.getElementById('date-span')
 const spanOpenClose = document.getElementById('restaurant-open-close')
